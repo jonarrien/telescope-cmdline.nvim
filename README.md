@@ -6,6 +6,8 @@ Telescope provides pickers for commands and command history, but editing the com
 
 > NOTE: This is an alpha version done in relative short time. May need further improvements or customizations, but it's working pretty well for me and thought sharing with community.
 
+![Alt Text](.docs/demo.gif)
+
 ## Installation
 
 ```lua
