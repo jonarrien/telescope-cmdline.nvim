@@ -51,10 +51,9 @@ local make_finder = function()
 end
 
 local telescope_cmdline = function(opts)
-  local config = get_config()
-  opts = vim.tbl_deep_extend("keep", config.picker, opts)
+  opts = vim.tbl_deep_extend("keep", get_config().picker, opts)
 
-  _G.cmdline = pickers.new(opts, {
+  local picker = pickers.new(opts, {
     prompt_title = "Cmdline",
     prompt_prefix = " : ",
     finder = make_finder(),
@@ -68,7 +67,7 @@ local telescope_cmdline = function(opts)
       return true
     end,
   })
-  _G.cmdline:find()
+  picker:find()
 end
 
 return telescope.register_extension({
