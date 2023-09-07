@@ -28,7 +28,10 @@ end
 -- Runs user input as neovim command, keeping command in history. Uses
 -- overseer plugin if enabled for system commands (starting with !)
 local run = function(cmd)
-  if not tonumber(cmd) then
+  if tonumber(cmd) then
+    vim.api.nvim_exec2(cmd , {})
+    return
+  else
     vim.fn.histadd("cmd", cmd)
   end
 

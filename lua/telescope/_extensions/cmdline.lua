@@ -27,10 +27,12 @@ local type_icon = function(entry)
     return config.icons.history
   elseif entry.type == 'number' then
     return config.icons.number
-  elseif entry.type == 'cmd' then
-    return config.icons.number
-  else
+  elseif entry.type == 'command' then
     return config.icons.command
+  elseif entry.type == 'system' then
+    return config.icons.system
+  else
+    return config.icons.unknown
   end
 end
 

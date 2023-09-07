@@ -2,9 +2,11 @@ local config = {}
 
 config.defaults = {
   icons = {
-    history = " ",
+    history = "󰋚 ",
     command = "󰣿 ",
-    number = "",
+    number = "󰴍 ",
+    system = "",
+    unknown = "",
   },
   picker = {
     layout_config = {
