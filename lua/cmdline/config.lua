@@ -1,23 +1,28 @@
 local config = {}
 
 config.defaults = {
-  icons = {
+  icons       = {
     history = "󰋚 ",
     command = "󰣿 ",
-    number = "󰴍 ",
-    system = "",
+    number  = "󰴍 ",
+    system  = "",
     unknown = "",
   },
-  picker = {
+  picker      = {
     layout_config = {
-      width = 80,
+      width  = 80,
       height = 20,
     }
   },
   completions = {
     'command',
   },
-  overseer = {
+  mappings    = {
+    complete      = '<Tab>',
+    run_selection = '<CR>',
+    run_input     = '<C-CR>',
+  },
+  overseer    = {
     enabled = true,
   }
 }

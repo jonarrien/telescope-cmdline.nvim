@@ -5,6 +5,8 @@ if not has_telescope then
 end
 
 local cmdline = require('cmdline')
+local config = require('cmdline.config')
+local action = require('cmdline.actions')
 local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
 local sorter = require("telescope.sorters")
@@ -12,7 +14,6 @@ local entry_display = require("telescope.pickers.entry_display")
 
 -- Notify user if `setup()` was not called
 local get_config = function()
-  local config = require('cmdline.config')
   if config.values == nil or config.values == {} then
     vim.notify("Please, run `setup()` first.", vim.log.levels.ERROR, {})
     return config.defaults
@@ -22,17 +23,16 @@ local get_config = function()
 end
 
 local type_icon = function(entry)
-  local config = get_config()
   if entry.type == 'history' then
-    return config.icons.history
+    return config.values.icons.history
   elseif entry.type == 'number' then
-    return config.icons.number
+    return config.values.icons.number
   elseif entry.type == 'command' then
-    return config.icons.command
+    return config.values.icons.command
   elseif entry.type == 'system' then
-    return config.icons.system
+    return config.values.icons.system
   else
-    return config.icons.unknown
+    return config.values.icons.unknown
   end
 end
 
@@ -66,21 +66,21 @@ local make_finder = function()
 end
 
 local telescope_cmdline = function(opts)
-  opts = vim.tbl_deep_extend("keep", get_config().picker, opts)
-
-  local picker = pickers.new(opts, {
+  local picker = pickers.new(config.values.picker, {
     prompt_title = "Cmdline",
     prompt_prefix = " : ",
     finder = make_finder(),
     sorter = sorter.get_fzy_sorter(opts),
     attach_mappings = function(_, map)
-      local action = require('cmdline.actions')
-      map("i", "<cr>", action.select_item)
-      map("i", "<tab>", action.complete_input)
-      map("i", "<C-l>", action.complete_input)
+      -- <CR>
+      map("i", config.values.mappings.run_selection, action.select_item)
+      -- <Tab>
+      map("i", config.values.mappings.complete, action.complete_input)
+      -- <C-CR>
+      map("i", config.values.mappings.run_input, action.run_input)
+      -- Others
       map("i", "<C-e>", action.edit)
       map("i", "<C-r>", action.run_input)
-      map("i", "<C-CR>", action.run_input)
       return true
     end,
   })
