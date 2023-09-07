@@ -1,12 +1,22 @@
 local config = {}
 
 config.defaults = {
-  icon = "󰣿 ",
+  icons = {
+    history = " ",
+    command = "󰣿 ",
+    number = "",
+  },
   picker = {
     layout_config = {
       width = 80,
       height = 20,
     }
+  },
+  completions = {
+    'command',
+  },
+  overseer = {
+    enabled = true,
   }
 }
 

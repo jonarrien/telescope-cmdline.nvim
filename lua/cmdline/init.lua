@@ -1,3 +1,27 @@
+-- ============================================================================
+-- Command line configuration
+-- ============================================================================
+-- Provide all results in a single view. Each entry must have the following
+-- attributes:
+--
+-- {
+--  index = number
+--  cmd   = string
+--  type  = string (history|command|system)
+--  desc  = string (optional?)
+-- }
+--
+-- The input is split into components.
+-- 1. All, except last part, are used for autocompletion
+-- 2. The last part is used to filter the list
+--
+-- In example: `grep something lua/`, it will use `grep something` to trigger
+-- autocompletion and `lua/` to filter the completion list.
+--
+-- ----------------------------------------------------------------------------
+
+local state = require("cmdline.state")
+
 local C = {}
 
 -- @param opts table: user settings
@@ -6,43 +30,26 @@ C.setup = function(opts)
   require("cmdline.config").set_defaults(opts)
 end
 
--- Load command history
-C.load_cmd_history = function()
-  local history_string = vim.fn.execute('history cmd')
-  local history_list = vim.split(history_string, '\n')
-
-  local results = {}
-  for i = #history_list, 3, -1 do
-    local item = history_list[i]
-    local d1, d2 = string.find(item, '%d+')
-    local digit = string.sub(item, d1, d2)
-    local _, finish = string.find(item, '%d+ +')
-    local cmd = string.sub(item, finish + 1)
-    table.insert(results, { index = digit, cmd = cmd })
-  end
-  return results
-end
-
 -- Complete based on user input
+-- 1. Load history if no input is provided
+-- 2. Numbers => Go to line
+-- 3. Detect terminal commands (starting with !)
+-- 4. Load completion
+-- @param text string: user input
 C.load_completion = function(text)
-  -- Load history if no input is provided
-  if string.len(text) == 0 then return C.load_cmd_history() end
-
-  -- Numbers => Go to line
-  if tonumber(text) then return { { index = 1, cmd = text } } end
-
-  -- Split input parts
-  local split = vim.split(text, ' ')
-  table.remove(split)
-  local input_start = table.concat(split, ' ')
-
-  local results = {}
-  local completions = vim.fn.getcompletion(text, 'cmdline')
-  for i = #completions, 1, -1 do
-    local suggestion = table.concat({ input_start, completions[i] }, ' ')
-    table.insert(results, 1, { index = i, cmd = suggestion })
+  if string.len(text) == 0 then
+    return state.command_history()
   end
-  return results
+
+  if tonumber(text) then
+    return { { type = 'number', index = 1, cmd = text, desc = 'Go to line ' .. text } }
+  end
+
+  if string.sub(text, 1, 1) == '!' then
+    return state.system_command(text)
+  end
+
+  return state.autocomplete(text)
 end
 
 return C

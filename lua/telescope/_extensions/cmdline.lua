@@ -21,6 +21,19 @@ local get_config = function()
   end
 end
 
+local type_icon = function(entry)
+  local config = get_config()
+  if entry.type == 'history' then
+    return config.icons.history
+  elseif entry.type == 'number' then
+    return config.icons.number
+  elseif entry.type == 'cmd' then
+    return config.icons.number
+  else
+    return config.icons.command
+  end
+end
+
 local displayer = entry_display.create {
   separator = " ",
   items = {
@@ -40,7 +53,7 @@ local make_finder = function()
   return finders.new_dynamic({
     fn = cmdline.load_completion,
     entry_maker = function(entry)
-      entry.icon = get_config().icon
+      entry.icon = type_icon(entry)
       entry.id = entry.index
       entry.value = entry.cmd
       entry.ordinal = entry.cmd
@@ -62,8 +75,10 @@ local telescope_cmdline = function(opts)
       local action = require('cmdline.actions')
       map("i", "<cr>", action.select_item)
       map("i", "<tab>", action.complete_input)
+      map("i", "<C-l>", action.complete_input)
       map("i", "<C-e>", action.edit)
       map("i", "<C-r>", action.run_input)
+      map("i", "<C-CR>", action.run_input)
       return true
     end,
   })

@@ -1,3 +1,4 @@
+local config = require("cmdline.config")
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 
@@ -21,15 +22,30 @@ local print_output = function(lines)
   vim.bo[buf].bufhidden = 'hide'
   vim.bo[buf].swapfile = false
   vim.api.nvim_win_set_buf(win, buf)
+  vim.api.nvim_exec2('resize 10', {})
 end
 
--- Runs user input as neovim command and saves in command history.
+-- Runs user input as neovim command, keeping command in history. Uses
+-- overseer plugin if enabled for system commands (starting with !)
 local run = function(cmd)
-  if not tonumber(cmd) then vim.fn.histadd("cmd", cmd) end
-  local nvim_cmd = vim.api.nvim_parse_cmd(cmd, {})
-  local output = vim.api.nvim_cmd(nvim_cmd, { output = true })
+  if not tonumber(cmd) then
+    vim.fn.histadd("cmd", cmd)
+  end
 
+  local cmd_ok, nvim_cmd = pcall(vim.api.nvim_parse_cmd, cmd, {})
+  if not cmd_ok then
+    vim.notify('Invalid command: ' .. cmd, vim.log.levels.ERROR, {})
+    return
+  end
+
+  if config.values.overseer.enabled and string.sub(cmd, 1, 1) == '!' then
+    vim.api.nvim_exec2('OverseerRunCmd ' .. cmd:sub(2), {})
+    return
+  end
+
+  local output = vim.api.nvim_cmd(nvim_cmd, { output = true })
   local lines = 0
+
   for _ in output:gmatch("([^\n]*)\n?") do
     lines = lines + 1
   end
@@ -37,6 +53,8 @@ local run = function(cmd)
   -- TODO: Check better way to avoid long messages
   if #output > 0 and lines <= 7 then
     vim.notify(output, vim.log.levels.INFO, {})
+  else
+    print_output(vim.split(output, '\n'))
   end
 end
 
