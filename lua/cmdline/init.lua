@@ -21,6 +21,7 @@
 -- ----------------------------------------------------------------------------
 
 local state = require("cmdline.state")
+local utils = require("cmdline.utils")
 
 local C = {}
 
@@ -31,25 +32,26 @@ C.setup = function(opts)
 end
 
 -- Complete based on user input
--- 1. Load history if no input is provided
--- 2. Numbers => Go to line
--- 3. Detect terminal commands (starting with !)
+-- 1. Numbers  => Go to line
+-- 2. Detect terminal commands (starting with !)
+-- 3. No input => Show command history
 -- 4. Load completion
 -- @param text string: user input
-C.load_completion = function(text)
-  if string.len(text) == 0 then
-    return state.command_history()
-  end
-
+C.autocomplete = function(text)
   if tonumber(text) then
     return { { type = 'number', index = 1, cmd = text, desc = 'Go to line ' .. text } }
   end
 
+  local history = state.command_history()
+  if string.len(text) == 0 then return history end
+
   if string.sub(text, 1, 1) == '!' then
-    return state.system_command(text)
+    local system_commands = state.system_command(text)
+    return utils.merge_results(system_commands, history)
   end
 
-  return state.autocomplete(text)
+  local completions = state.autocomplete(text)
+  return utils.merge_results(completions, history)
 end
 
 return C

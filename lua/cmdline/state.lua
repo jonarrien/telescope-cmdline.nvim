@@ -12,7 +12,7 @@ local M           = {}
 local fn          = {}
 
 fn.add_command    = function(index, cmd)
-  table.insert(cache.commands, { id = index, cmd = cmd, type = 'command' })
+  table.insert(cache.commands, { id = 1000 + index, cmd = cmd, type = 'command' })
 end
 
 fn.add_history    = function(index, cmd)

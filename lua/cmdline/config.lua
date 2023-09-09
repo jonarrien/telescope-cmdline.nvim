@@ -2,10 +2,10 @@ local config = {}
 
 config.defaults = {
   icons       = {
-    history = "󰋚 ",
-    command = "󰣿 ",
+    history = " ",
+    command = " ", -- 󰣿 󰏤 
     number  = "󰴍 ",
-    system  = "",
+    system  = "",
     unknown = "",
   },
   picker      = {
@@ -19,8 +19,8 @@ config.defaults = {
   },
   mappings    = {
     complete      = '<Tab>',
-    run_selection = '<CR>',
-    run_input     = '<C-CR>',
+    run_selection = '<C-CR>',
+    run_input     = '<CR>',
   },
   overseer    = {
     enabled = true,

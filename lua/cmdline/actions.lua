@@ -76,13 +76,20 @@ A.edit = function(prompt_bufnr)
   picker:set_prompt(command.cmd)
 end
 
+-- Runs input if user has entered, otherwise runs first selection
+-- from command history (to repeat last action)
 A.run_input = function(prompt_bufnr)
   local input = get_user_input(prompt_bufnr)
-  actions.close(prompt_bufnr)
-  run(input)
+
+  if input ~= nil and string.len(input) > 0 then
+    actions.close(prompt_bufnr)
+    run(input)
+  else
+    A.run_selection(prompt_bufnr)
+  end
 end
 
-A.select_item = function(prompt_bufnr)
+A.run_selection = function(prompt_bufnr)
   local command = action_state.get_selected_entry()
   if not command then
     command = { id = 1, cmd = get_user_input(prompt_bufnr) }
