@@ -10,8 +10,8 @@ config.defaults = {
   },
   picker      = {
     layout_config = {
-      width  = 80,
-      height = 20,
+      width  = 100,
+      height = 25,
     }
   },
   completions = {
@@ -30,7 +30,9 @@ config.defaults = {
   }
 }
 
-config.values = {}
+config.values = {
+  mappings = {}
+}
 
 -- @param user_defaults table: user options
 function config.set_defaults(user_defaults)

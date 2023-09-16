@@ -107,9 +107,9 @@ vim.api.nvim_set_keymap('n', '<leader><leader>', ':silent Telescope cmdline<CR>'
 
 ## Mappings
 
-- `<CR>` Select current entry or input
-- `<TAB>` complete current input (useful for :e, :split, :vsplit, :tabnew)
-- `<C-r>` run prompt input instead of current selection
+- `<CR>`  Run user input if entered, otherwise run first selection
+- `<TAB>` complete current selection into input (useful for :e, :split, :vsplit, :tabnew)
+- `<C-CR>`Run selection directly
 - `<C-e>` edit current selection in prompt
 
 ## Notes

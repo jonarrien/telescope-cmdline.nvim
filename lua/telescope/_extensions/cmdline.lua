@@ -57,11 +57,10 @@ local telescope_cmdline = function(opts)
     finder = make_finder(config),
     sorter = sorter.get_fzy_sorter(opts),
     attach_mappings = function(_, map)
-      map("i", config.mappings.run_selection, action.run_selection) -- <CR>
       map("i", config.mappings.complete, action.complete_input)     -- <Tab>
-      map("i", config.mappings.run_input, action.run_input)         -- <C-CR>
+      map("i", config.mappings.run_input, action.run_input)         -- <CR>
+      map("i", config.mappings.run_selection, action.run_selection) -- <C-CR>
       map("i", "<C-e>", action.edit)
-      map("i", "<C-r>", action.run_input)
       return true
     end,
   })
