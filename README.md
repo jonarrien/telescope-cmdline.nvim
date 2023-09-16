@@ -31,8 +31,37 @@ use { 'jonarrien/telescope-cmdline.nvim' }
 <details>
 <summary>Lazy</summary>
 
+Install package individually
+
 ```lua
-{ 'jonarrien/telescope-cmdline.nvim', opts = {} }
+{
+  'jonarrien/telescope-cmdline.nvim',
+  name = 'cmdline',
+  opts = {},
+  keys = {
+    { '<leader><leader>', '<cmd>Telescope cmdline<cr>', desc = 'Cmdline' }
+  }
+}
+```
+
+Install package as telescope dependency
+
+```lua
+{
+  "nvim-telescope/telescope.nvim",
+  tag = "0.1.3",
+  config = function(_, opts)
+    require("cmdline").setup()
+    require("telescope").setup(opts)
+    require("telescope").load_extension('cmdline')
+  end,
+  dependencies = {
+    'jonarrien/telescope-cmdline.nvim',
+  },
+  keys = {
+    { '<leader><leader>', '<cmd>Telescope cmdline<cr>', desc = 'Cmdline' }
+  }
+}
 ```
 
 </details>
@@ -40,7 +69,7 @@ use { 'jonarrien/telescope-cmdline.nvim' }
 
 ## Configuration
 
-Add this line to your neovim configuration to lod the extension:
+Add this line to your neovim configuration to load the extension:
 
 ```lua
 require("telescope").load_extension('cmdline')

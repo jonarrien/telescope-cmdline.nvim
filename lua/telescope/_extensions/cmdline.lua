@@ -5,15 +5,19 @@ if not has_telescope then
 end
 
 local cmdline = require('cmdline')
-local config = require('cmdline.config')
 local action = require('cmdline.actions')
 local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
 local sorter = require("telescope.sorters")
 local entry_display = require("telescope.pickers.entry_display")
 
-local icon = function(entry)
-  return config.values.icons[entry.type] or config.values.icons.unknown
+local get_config = function()
+  local config = require('cmdline.config')
+  if config.values == nil or config.values == {} then
+    return config.defaults
+  else
+    return config.values
+  end
 end
 
 local displayer = entry_display.create({
@@ -31,11 +35,11 @@ local make_display = function(entry)
   })
 end
 
-local make_finder = function()
+local make_finder = function(config)
   return finders.new_dynamic({
     fn = cmdline.autocomplete,
     entry_maker = function(entry)
-      entry.icon = icon(entry)
+      entry.icon = config.icons[entry.type]
       entry.id = entry.index
       entry.value = entry.cmd
       entry.ordinal = entry.cmd
@@ -46,19 +50,16 @@ local make_finder = function()
 end
 
 local telescope_cmdline = function(opts)
-  local picker = pickers.new(config.values.picker, {
+  local config = get_config()
+  local picker = pickers.new(config.picker, {
     prompt_title = "Cmdline",
     prompt_prefix = " : ",
-    finder = make_finder(),
+    finder = make_finder(config),
     sorter = sorter.get_fzy_sorter(opts),
     attach_mappings = function(_, map)
-      -- <CR>
-      map("i", config.values.mappings.run_selection, action.run_selection)
-      -- <Tab>
-      map("i", config.values.mappings.complete, action.complete_input)
-      -- <C-CR>
-      map("i", config.values.mappings.run_input, action.run_input)
-      -- Others
+      map("i", config.mappings.run_selection, action.run_selection) -- <CR>
+      map("i", config.mappings.complete, action.complete_input)     -- <Tab>
+      map("i", config.mappings.run_input, action.run_input)         -- <C-CR>
       map("i", "<C-e>", action.edit)
       map("i", "<C-r>", action.run_input)
       return true
