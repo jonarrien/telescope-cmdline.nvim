@@ -29,11 +29,11 @@ end
 -- overseer plugin if enabled for system commands (starting with !)
 local run = function(cmd)
   if tonumber(cmd) then
-    vim.api.nvim_exec2(cmd , {})
+    vim.api.nvim_exec2(cmd, {})
     return
-  else
-    vim.fn.histadd("cmd", cmd)
   end
+
+  vim.fn.histadd("cmd", cmd)
 
   local cmd_ok, nvim_cmd = pcall(vim.api.nvim_parse_cmd, cmd, {})
   if not cmd_ok then
@@ -46,7 +46,13 @@ local run = function(cmd)
     return
   end
 
-  local output = vim.api.nvim_cmd(nvim_cmd, { output = true })
+  if not config.values.output.enabled then
+    vim.api.nvim_exec2(cmd, {})
+    return
+  end
+
+  local data = vim.api.nvim_exec2(cmd, { output = true })
+  local output = data.output
   local lines = 0
 
   for _ in output:gmatch("([^\n]*)\n?") do
@@ -54,7 +60,7 @@ local run = function(cmd)
   end
 
   -- TODO: Check better way to avoid long messages
-  if #output > 0 and lines <= 7 then
+  if #output > 0 and lines <= 3 then
     vim.notify(output, vim.log.levels.INFO, {})
   else
     print_output(vim.split(output, '\n'))

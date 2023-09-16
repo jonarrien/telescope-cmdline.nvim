@@ -24,6 +24,9 @@ config.defaults = {
   },
   overseer    = {
     enabled = true,
+  },
+  output      = {
+    enabled = false
   }
 }
 
