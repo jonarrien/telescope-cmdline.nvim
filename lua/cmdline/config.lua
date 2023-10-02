@@ -2,7 +2,7 @@ local config = {}
 
 config.defaults = {
   icons       = {
-    history = " ",
+    history = " ",
     command = " ", -- 󰣿 󰏤 
     number  = "󰴍 ",
     system  = "",

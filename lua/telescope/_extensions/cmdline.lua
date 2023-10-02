@@ -30,8 +30,8 @@ local displayer = entry_display.create({
 
 local make_display = function(entry)
   return displayer({
-    { entry.icon, "Comment" },
-    { entry.cmd,  "Debug" },
+    { entry.icon, "Include" },
+    { entry.cmd,  "Comment" },
   })
 end
 
