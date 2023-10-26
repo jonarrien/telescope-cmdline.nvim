@@ -68,6 +68,9 @@ local telescope_cmdline = function(opts)
 end
 
 return telescope.register_extension({
+  setup = function(ext_config, config)
+    require("cmdline.config").set_defaults(ext_config)
+  end,
   exports = {
     cmdline = telescope_cmdline,
   }

@@ -31,19 +31,6 @@ use { 'jonarrien/telescope-cmdline.nvim' }
 <details>
 <summary>Lazy</summary>
 
-Install package individually
-
-```lua
-{
-  'jonarrien/telescope-cmdline.nvim',
-  name = 'cmdline',
-  opts = {},
-  keys = {
-    { '<leader><leader>', '<cmd>Telescope cmdline<cr>', desc = 'Cmdline' }
-  }
-}
-```
-
 Install package as telescope dependency
 
 ```lua
@@ -51,7 +38,6 @@ Install package as telescope dependency
   "nvim-telescope/telescope.nvim",
   tag = "0.1.3",
   config = function(_, opts)
-    require("cmdline").setup()
     require("telescope").setup(opts)
     require("telescope").load_extension('cmdline')
   end,
@@ -69,26 +55,34 @@ Install package as telescope dependency
 
 ## Configuration
 
-Add this line to your neovim configuration to load the extension:
+You can customise cmdline settings in telescope configuration.
 
 ```lua
-require("telescope").load_extension('cmdline')
+require("telescope").setup({
+  ...
+  extensions = {
+    cmdline = {
+      picker = {
+        layout_config = {
+          width  = 120,
+          height = 25,
+        }
+      },
+      mappings    = {
+        complete      = '<Tab>',
+        run_selection = '<C-CR>',
+        run_input     = '<CR>',
+      },
+    },
+  }
+  ...
+})
 ```
 
 <details>
 <summary>Default configuration</summary>
 
-```lua
-{
-  icon = "󰣿 ",
-  picker = {
-    layout_config = {
-      width = 80,
-      height = 20,
-    }
-  }
-}
-```
+See full configuration options in `lua/cmdline/config.lua` file.
 
 </details>
 
