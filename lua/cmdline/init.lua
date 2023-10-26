@@ -42,7 +42,7 @@ C.autocomplete = function(text)
     return { { type = 'number', index = 1, cmd = text, desc = 'Go to line ' .. text } }
   end
 
-  local history = state.command_history()
+  local history = state.command_history(text)
   if string.len(text) == 0 then return history end
 
   if string.sub(text, 1, 1) == '!' then

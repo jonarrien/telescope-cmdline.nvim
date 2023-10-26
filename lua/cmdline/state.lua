@@ -3,25 +3,33 @@ local function compare(a, b)
 end
 
 -- Arrays to store results
-local cache       = {}
-cache.commands    = {}
-cache.history     = {}
-cache.system      = {}
+local cache      = {}
+cache.commands   = {}
+cache.history    = {}
+cache.system     = {}
 
-local M           = {}
-local fn          = {}
+local M          = {}
+local fn         = {}
 
-fn.add_command    = function(index, cmd)
+fn.add_command   = function(index, cmd)
   table.insert(cache.commands, { id = 1000 + index, cmd = cmd, type = 'command' })
 end
 
-fn.add_history    = function(index, cmd)
+fn.add_history   = function(index, cmd)
   table.insert(cache.history, { id = index, cmd = cmd, type = 'history' })
 end
 
-fn.add_system     = function(index, cmd)
+fn.add_system    = function(index, cmd)
   table.insert(cache.system, { id = index, cmd = "!" .. cmd, type = 'system' })
 end
+
+fn.parse_history = function(entry)
+  local d1, d2 = string.find(entry, '%d+')
+  local digit = string.sub(entry, d1, d2)
+  local _, finish = string.find(entry, '%d+ +')
+  return digit, string.sub(entry, finish + 1)
+end
+
 
 -- Public
 
@@ -66,18 +74,20 @@ M.system_command  = function(text)
   return cache.system
 end
 
-M.command_history = function()
+-- Loads full history when no text is provided and matches when text is provided
+M.command_history = function(text)
   local history_string = assert(vim.fn.execute('history cmd'), 'History is empty')
   local history_list = vim.split(history_string, '\n')
   cache.history = {}
 
   for i = #history_list, 3, -1 do
     local item = history_list[i]
-    local d1, d2 = string.find(item, '%d+')
-    local digit = string.sub(item, d1, d2)
-    local _, finish = string.find(item, '%d+ +')
-    local cmd = string.sub(item, finish + 1)
-    fn.add_history(digit, cmd)
+
+    if text == nil or text == "" then
+      fn.add_history(fn.parse_history(item))
+    elseif string.find(item, text) then
+      fn.add_history(fn.parse_history(item))
+    end
   end
   return cache.history
 end
