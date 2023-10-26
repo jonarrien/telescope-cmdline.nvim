@@ -25,12 +25,6 @@ local utils = require("cmdline.utils")
 
 local C = {}
 
--- @param opts table: user settings
-C.setup = function(opts)
-  opts = opts or {}
-  require("cmdline.config").set_defaults(opts)
-end
-
 -- Complete based on user input
 -- 1. Numbers  => Go to line
 -- 2. Detect terminal commands (starting with !)

@@ -29,9 +29,10 @@ local displayer = entry_display.create({
 })
 
 local make_display = function(entry)
+  local config = get_config()
   return displayer({
-    { entry.icon, "Include" },
-    { entry.cmd,  "Comment" },
+    { entry.icon, config.highlights.icon },
+    { entry.cmd,  config.highlights.text },
   })
 end
 

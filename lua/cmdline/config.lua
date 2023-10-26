@@ -1,6 +1,8 @@
-local config = {}
-
-config.defaults = {
+local defaults = {
+  highlights  = {
+    icon = "Include",
+    text = "Comment",
+  },
   icons       = {
     history = " ",
     command = " ", -- 󰣿 󰏤 
@@ -30,14 +32,16 @@ config.defaults = {
   }
 }
 
-config.values = {
-  mappings = {}
+local config = {
+  values = {
+    mappings = {}
+  }
 }
 
 -- @param user_defaults table: user options
 function config.set_defaults(user_defaults)
   user_defaults = vim.F.if_nil(user_defaults, {})
-  config.values = vim.tbl_deep_extend("keep", user_defaults, config.defaults)
+  config.values = vim.tbl_deep_extend("keep", user_defaults, defaults)
 end
 
 return config
