@@ -50,9 +50,9 @@ local make_finder = function(config)
   })
 end
 
-local telescope_cmdline = function(opts)
+local make_picker = function(opts)
   local config = get_config()
-  local picker = pickers.new(config.picker, {
+  return pickers.new(config.picker, {
     prompt_title = "Cmdline",
     prompt_prefix = " : ",
     finder = make_finder(config),
@@ -65,14 +65,25 @@ local telescope_cmdline = function(opts)
       return true
     end,
   })
+end
+
+local telescope_cmdline = function(opts)
+  local picker = make_picker(opts)
   picker:find()
+end
+
+local cmdline_visual = function(opts)
+  local picker = make_picker(opts)
+  picker:find()
+  picker:set_prompt("'<,'> ")
 end
 
 return telescope.register_extension({
   setup = function(ext_config, config)
     require("cmdline.config").set_defaults(ext_config)
   end,
-  exports = {
+  exports   = {
     cmdline = telescope_cmdline,
+    visual  = cmdline_visual,
   }
 })
