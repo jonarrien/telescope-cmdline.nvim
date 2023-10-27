@@ -43,6 +43,7 @@ local run = function(cmd)
 
   if config.values.overseer.enabled and string.sub(cmd, 1, 1) == '!' then
     vim.api.nvim_exec2('OverseerRunCmd ' .. cmd:sub(2), {})
+    vim.api.nvim_exec2('OverseerOpen', {})
     return
   end
 
