@@ -88,6 +88,12 @@ See full configuration options in `lua/cmdline/config.lua` file.
 
 ## Trigger
 
+⚠️ Make sure to load the `cmdline` extension, so that the `Telescope cmdline` command is available.
+
+```lua
+require("telescope").load_extension("cmdline")
+```
+
 Cmdline can be executed using `:Telescope cmdline<CR>`, but it doesn't
 include any mapping by default.
 
