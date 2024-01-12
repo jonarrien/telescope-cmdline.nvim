@@ -1,7 +1,6 @@
 local defaults = {
   highlights  = {
     icon = "Include",
-    text = "Comment",
   },
   icons       = {
     history = " ",

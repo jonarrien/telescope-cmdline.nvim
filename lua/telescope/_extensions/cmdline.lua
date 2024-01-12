@@ -32,7 +32,7 @@ local make_display = function(entry)
   local config = get_config()
   return displayer({
     { entry.icon, config.highlights.icon },
-    { entry.cmd,  config.highlights.text },
+    { entry.cmd },
   })
 end
 
