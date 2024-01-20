@@ -26,7 +26,7 @@ local defaults = {
   overseer    = {
     enabled = true,
   },
-  output      = {
+  output_pane      = {
     enabled = false
   }
 }

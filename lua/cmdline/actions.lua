@@ -47,8 +47,12 @@ local run = function(cmd)
     return
   end
 
-  if not config.values.output.enabled then
-    vim.api.nvim_exec2(cmd, {})
+  if not config.values.output_pane.enabled then
+    if vim.fn.has('nvim-0.8') == 1 then
+      vim.api.nvim_exec2(cmd, {})
+    else
+      vim.api.nvim_exec(cmd, false)
+    end
     return
   end
 
