@@ -10,6 +10,7 @@ cache.system     = {}
 
 local M          = {}
 local fn         = {}
+local previous_search = ""
 
 fn.add_command   = function(index, cmd)
   table.insert(cache.commands, { id = 1000 + index, cmd = cmd, type = 'command' })
@@ -34,18 +35,21 @@ end
 -- Public
 
 M.autocomplete    = function(text)
-  local split = vim.split(text, ' ')
-  table.remove(split)
-  local input_start = table.concat(split, ' ')
-  local completions = assert(vim.fn.getcompletion(text, 'cmdline'), 'No completions found')
-  cache.commands = {}
+	if #previous_search == 0 or text:sub(-1) == " " or #text <= #previous_search then
+		local split = vim.split(text, " ")
+		table.remove(split)
+		local input_start = table.concat(split, " ")
+		local completions = assert(vim.fn.getcompletion(text, "cmdline"), "No completions found")
+		cache.commands = {}
 
-  for i = #completions, 1, -1 do
-    local suggestion = table.concat({ input_start, completions[i] }, ' ')
-    fn.add_command(i, vim.trim(suggestion))
-  end
+		for i = #completions, 1, -1 do
+			local suggestion = table.concat({ input_start, completions[i] }, " ")
+			fn.add_command(i, vim.trim(suggestion))
+		end
+		previous_search = text
+	end
 
-  return cache.commands
+	return cache.commands
 end
 
 M.system_command  = function(text)
