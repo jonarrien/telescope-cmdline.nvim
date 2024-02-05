@@ -3,56 +3,58 @@ local function compare(a, b)
 end
 
 -- Arrays to store results
-local cache      = {}
-cache.commands   = {}
-cache.history    = {}
-cache.system     = {}
+local cache           = {}
+cache.commands        = {}
+cache.history         = {}
+cache.system          = {}
 
-local M          = {}
-local fn         = {}
+-- Search
 local previous_search = ""
 
-fn.add_command   = function(index, cmd)
+local fn              = {}
+
+fn.add_command        = function(index, cmd)
   table.insert(cache.commands, { id = 1000 + index, cmd = cmd, type = 'command' })
 end
 
-fn.add_history   = function(index, cmd)
+fn.add_history        = function(index, cmd)
   table.insert(cache.history, { id = index, cmd = cmd, type = 'history' })
 end
 
-fn.add_system    = function(index, cmd)
+fn.add_system         = function(index, cmd)
   table.insert(cache.system, { id = index, cmd = "!" .. cmd, type = 'system' })
 end
 
-fn.parse_history = function(entry)
+fn.parse_history      = function(entry)
   local d1, d2 = string.find(entry, '%d+')
   local digit = string.sub(entry, d1, d2)
   local _, finish = string.find(entry, '%d+ +')
   return digit, string.sub(entry, finish + 1)
 end
 
-
 -- Public
 
-M.autocomplete    = function(text)
-	if #previous_search == 0 or text:sub(-1) == " " or #text <= #previous_search then
-		local split = vim.split(text, " ")
-		table.remove(split)
-		local input_start = table.concat(split, " ")
-		local completions = assert(vim.fn.getcompletion(text, "cmdline"), "No completions found")
-		cache.commands = {}
+local M               = {}
 
-		for i = #completions, 1, -1 do
-			local suggestion = table.concat({ input_start, completions[i] }, " ")
-			fn.add_command(i, vim.trim(suggestion))
-		end
-		previous_search = text
-	end
+M.autocomplete        = function(text)
+  if #previous_search == 0 or text:sub(-1) == " " or #text <= #previous_search then
+    local split = vim.split(text, " ")
+    table.remove(split)
+    local input_start = table.concat(split, " ")
+    local completions = assert(vim.fn.getcompletion(text, "cmdline"), "No completions found")
+    cache.commands = {}
 
-	return cache.commands
+    for i = #completions, 1, -1 do
+      local suggestion = table.concat({ input_start, completions[i] }, " ")
+      fn.add_command(i, vim.trim(suggestion))
+    end
+    previous_search = text
+  end
+
+  return cache.commands
 end
 
-M.system_command  = function(text)
+M.system_command      = function(text)
   local split = vim.split(text, ' ')
   local parts = #split
   local input_start = ''
@@ -79,7 +81,7 @@ M.system_command  = function(text)
 end
 
 -- Loads full history when no text is provided and matches when text is provided
-M.command_history = function(text)
+M.command_history     = function(text)
   local history_string = assert(vim.fn.execute('history cmd'), 'History is empty')
   local history_list = vim.split(history_string, '\n')
   cache.history = {}
@@ -96,7 +98,7 @@ M.command_history = function(text)
   return cache.history
 end
 
-M.sort            = function(table)
+M.sort                = function(table)
   table.sort(table, compare)
 end
 

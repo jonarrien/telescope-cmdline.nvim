@@ -29,7 +29,7 @@ local displayer = entry_display.create({
 })
 
 local make_display = function(entry)
-  local config = get_config()
+  local config = assert(get_config(), "No config found")
   return displayer({
     { entry.icon, config.highlights.icon },
     { entry.cmd },
@@ -51,7 +51,7 @@ local make_finder = function(config)
 end
 
 local make_picker = function(opts)
-  local config = get_config()
+  local config = assert(get_config(), "No config found")
   return pickers.new(config.picker, {
     prompt_title = "Cmdline",
     prompt_prefix = " : ",

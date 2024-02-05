@@ -25,8 +25,7 @@ local print_output = function(lines)
   vim.api.nvim_exec2('resize 10', {})
 end
 
--- Runs user input as neovim command, keeping command in history. Uses
--- overseer plugin if enabled for system commands (starting with !)
+-- Runs user input as neovim command and keeps in history.
 local run = function(cmd)
   if tonumber(cmd) then
     vim.api.nvim_exec2(cmd, {})
@@ -49,8 +48,9 @@ local run = function(cmd)
 
   if not config.values.output_pane.enabled then
     if vim.fn.has('nvim-0.8') == 1 then
-      vim.api.nvim_exec2(cmd, {})
+      vim.api.nvim_exec2(cmd, { output = false })
     else
+      ---@diagnostic disable-next-line: deprecated, undefined-field
       vim.api.nvim_exec(cmd, false)
     end
     return

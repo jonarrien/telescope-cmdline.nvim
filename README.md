@@ -6,11 +6,12 @@ than in bottom-left corner.
 ![Alt Text](.docs/demo.gif)
 
 **Intended behaviour:**
-- Show command history when no input is provided (to go up&down in
-  history using telescope keybindings)
-- Typing doesn't filter command history, it starts a new command and
-  autocompletes.
+- Show command history by default (to go up&down in history)
+- Use input text to: 
+    - autocomplete a new command
+    - fuzzy search command history
 - Use `<CR>` to trigger the selected command.
+- Use `<Tab>` to complete current completion
 - Use `<C-e>` to pass selection to input field and edit it.
 
 > NOTE: This is an alpha version done in relative short time. May need
@@ -19,11 +20,18 @@ than in bottom-left corner.
 
 ## Installation
 
+⚠️ Make sure to load the `cmdline` extension after telescope, otherwise
+`Telescope cmdline` command won't be available.
+
 <details>
 <summary>Packer</summary>
 
 ```lua
 use { 'jonarrien/telescope-cmdline.nvim' }
+
+```lua
+require("telescope").setup({})
+require("telescope").load_extension('cmdline')
 ```
 
 </details>
@@ -36,17 +44,27 @@ Install package as telescope dependency
 ```lua
 {
   "nvim-telescope/telescope.nvim",
-  tag = "0.1.3",
+  tag = "0.1.5",
+  dependencies = {
+    'nvim-lua/plenary.nvim',
+    'jonarrien/telescope-cmdline.nvim',
+  },
+  keys = {
+    { ':', '<cmd>Telescope cmdline<cr>', desc = 'Cmdline' }
+  },
+  opts = {
+    ...
+    extensions = {
+      cmdline = {
+        ... plugin settings ...
+      },
+    }
+    ...
+  }, 
   config = function(_, opts)
     require("telescope").setup(opts)
     require("telescope").load_extension('cmdline')
   end,
-  dependencies = {
-    'jonarrien/telescope-cmdline.nvim',
-  },
-  keys = {
-    { '<leader><leader>', '<cmd>Telescope cmdline<cr>', desc = 'Cmdline' }
-  }
 }
 ```
 
@@ -79,31 +97,7 @@ require("telescope").setup({
 })
 ```
 
-<details>
-<summary>Default configuration</summary>
-
-See full configuration options in `lua/cmdline/config.lua` file.
-
-</details>
-
-## Trigger
-
-⚠️ Make sure to load the `cmdline` extension, so that the `Telescope cmdline` command is available.
-
-```lua
-require("telescope").load_extension("cmdline")
-```
-
-Cmdline can be executed using `:Telescope cmdline<CR>`, but it doesn't
-include any mapping by default.
-
-> I aim to replace `:`, but there are some caveats and I recommend to
-> use another mapping instead. If you want to give it a try, add this
-> line in your config:
-
-```lua
-vim.api.nvim_set_keymap('n', '<leader><leader>', ':silent Telescope cmdline<CR>', { noremap = true, desc = "Cmdline" })
-```
+> Default configuration can be found in `lua/cmdline/config.lua` file.
 
 ## Mappings
 
@@ -112,10 +106,22 @@ vim.api.nvim_set_keymap('n', '<leader><leader>', ':silent Telescope cmdline<CR>'
 - `<C-CR>`Run selection directly
 - `<C-e>` edit current selection in prompt
 
+Cmdline can be executed using `:Telescope cmdline<CR>`, but it doesn't
+include any mapping by default. Normally I use ':' to trigger it, but
+it's true there are some caveats or edge cases. 
+
+Please, configure the mapping which suits best for you:
+
+```lua
+vim.api.nvim_set_keymap('n', ':', ':Telescope cmdline<CR>', { noremap = true, desc = "Cmdline" })
+vim.api.nvim_set_keymap('n', '<leader><leader>', ':Telescope cmdline<CR>', { noremap = true, desc = "Cmdline" })
+```
+
 ## Notes
 
 - [x] Support normal mode
 - [ ] Support visual mode
+- [x] Support fuzzy finding (Thanks to @sc0)
 
 ## Acknowledgements
 
