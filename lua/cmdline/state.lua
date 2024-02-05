@@ -88,12 +88,7 @@ M.command_history     = function(text)
 
   for i = #history_list, 3, -1 do
     local item = history_list[i]
-
-    if text == nil or text == "" then
-      fn.add_history(fn.parse_history(item))
-    elseif string.find(item, text) then
-      fn.add_history(fn.parse_history(item))
-    end
+    fn.add_history(fn.parse_history(item))
   end
   return cache.history
 end
