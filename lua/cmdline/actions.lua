@@ -78,7 +78,7 @@ A.complete_input = function(prompt_bufnr)
   local command = action_state.get_selected_entry()
   if not command then return end
   local picker = action_state.get_current_picker(prompt_bufnr)
-  picker:set_prompt(command.cmd)
+  picker:set_prompt(vim.trim(command.cmd))
 end
 
 A.edit = function(prompt_bufnr)

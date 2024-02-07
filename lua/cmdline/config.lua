@@ -4,7 +4,7 @@ local defaults = {
   },
   icons       = {
     history = " ",
-    command = " ", -- 󰣿 󰏤 
+    command = " ", -- 󰣿 󰴲 󰏤 
     number  = "󰴍 ",
     system  = "",
     unknown = "",
@@ -26,7 +26,7 @@ local defaults = {
   overseer    = {
     enabled = true,
   },
-  output_pane      = {
+  output_pane = {
     enabled = false
   }
 }
