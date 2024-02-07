@@ -27,8 +27,8 @@ local C = {}
 
 -- Complete based on user input
 -- 1. Numbers  => Go to line
--- 2. Detect terminal commands (starting with !)
--- 3. No input => Show command history
+-- 2. No input => Show command history to pick latest commands easily
+-- 3. System   => Detect commands starting with !
 -- 4. Load completion
 -- @param text string: user input
 C.autocomplete = function(text)
@@ -36,7 +36,7 @@ C.autocomplete = function(text)
     return { { type = 'number', index = 1, cmd = text, desc = 'Go to line ' .. text } }
   end
 
-  local history = state.command_history(text)
+  local history = state.command_history()
   if string.len(text) == 0 then return history end
 
   if string.sub(text, 1, 1) == '!' then
@@ -44,8 +44,8 @@ C.autocomplete = function(text)
     return utils.merge_results(system_commands, history)
   end
 
-  local completions = state.autocomplete(text)
-  return utils.merge_results(completions, history)
+  local commands = state.autocomplete(text)
+  return utils.merge_results(commands, history)
 end
 
 return C

@@ -8,8 +8,9 @@ local cmdline = require('cmdline')
 local action = require('cmdline.actions')
 local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
-local sorter = require("telescope.sorters")
 local entry_display = require("telescope.pickers.entry_display")
+
+local sorter = require('cmdline.sorter')
 
 local get_config = function()
   local config = require('cmdline.config')
@@ -56,7 +57,7 @@ local make_picker = function(opts)
     prompt_title = "Cmdline",
     prompt_prefix = " : ",
     finder = make_finder(config),
-    sorter = sorter.get_fzy_sorter(opts),
+    sorter = sorter(opts),
     attach_mappings = function(_, map)
       map("i", config.mappings.complete, action.complete_input)     -- <Tab>
       map("i", config.mappings.run_input, action.run_input)         -- <CR>
