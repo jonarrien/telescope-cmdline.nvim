@@ -69,11 +69,13 @@ local make_picker = function(opts)
 end
 
 local telescope_cmdline = function(opts)
+  cmdline.preload()
   local picker = make_picker(opts)
   picker:find()
 end
 
 local cmdline_visual = function(opts)
+  cmdline.preload()
   local picker = make_picker(opts)
   picker:find()
   picker:set_prompt("'<,'> ")

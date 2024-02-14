@@ -25,11 +25,18 @@ local utils = require("cmdline.utils")
 
 local C = {}
 
--- Complete based on user input
+-- Autoomplete user input
+--
 -- 1. Numbers  => Go to line
 -- 2. No input => Show command history to pick latest commands easily
 -- 3. System   => Detect commands starting with !
--- 4. Load completion
+-- 4. When no space is provided:
+--    * fuzzy find history
+--    * fuzzy find all commands
+-- 5. When last character is triggerable:
+--    * Use command completion for next batch of results
+-- 6 Otherwise, cache last results
+--
 -- @param text string: user input
 C.autocomplete = function(text)
   if tonumber(text) then
@@ -37,7 +44,7 @@ C.autocomplete = function(text)
   end
 
   local history = state.command_history()
-  if string.len(text) == 0 then return history end
+  if #text == 0 then return history end
 
   if string.sub(text, 1, 1) == '!' then
     local system_commands = state.system_command(text)
@@ -46,6 +53,10 @@ C.autocomplete = function(text)
 
   local commands = state.autocomplete(text)
   return utils.merge_results(commands, history)
+end
+
+C.preload = function()
+  state.preload()
 end
 
 return C

@@ -99,13 +99,6 @@ end
 local M           = {}
 
 -- Autocompletes user input
---
--- 1. When no spaces are provided, provide all existing commands
---    for fuzzy search.
--- 2. When last character is triggerable, use nvim's completion for the
---    next results.
---
--- @param text string: user input
 M.autocomplete    = function(text)
   local splits = vim.split(text, " ")
 
@@ -128,10 +121,15 @@ M.autocomplete    = function(text)
       local suggestion = table.concat({ search.current_keyword, completions[i] }, " ")
       fn.add_command(i, vim.trim(suggestion))
     end
-    search.previous = text
   end
 
+  search.previous = text
+
   return cache.commands
+end
+
+M.preload         = function()
+  fn.preload_commands()
 end
 
 M.system_command  = function(text)
