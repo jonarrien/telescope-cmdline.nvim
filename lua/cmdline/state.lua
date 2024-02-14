@@ -109,7 +109,9 @@ local M           = {}
 M.autocomplete    = function(text)
   local splits = vim.split(text, " ")
 
-  if not cache.all_commands then fn.preload_commands() end
+  if #cache.all_commands == 0 then
+    fn.preload_commands()
+  end
 
   if #splits == 0 then return cache.all_commands end
 
