@@ -63,6 +63,11 @@ local make_picker = function(opts)
       map("i", config.mappings.run_input, action.run_input)         -- <CR>
       map("i", config.mappings.run_selection, action.run_selection) -- <C-CR>
       map("i", "<C-e>", action.edit)
+      require("telescope.actions").close:enhance {
+        post = function()
+          cmdline.preview.clean(vim.api.nvim_win_get_buf(0))
+        end,
+      }
       return true
     end,
   })
