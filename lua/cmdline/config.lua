@@ -43,4 +43,6 @@ function config.set_defaults(user_defaults)
   config.values = vim.tbl_deep_extend("keep", user_defaults, defaults)
 end
 
+config.namespace_id = vim.api.nvim_create_namespace('cmdline')
+
 return config

@@ -1,3 +1,6 @@
+local config             = require('cmdline.config')
+local action_state       = require("telescope.actions.state")
+
 -- Characters that trigger new autocompletion
 local trigger_characters = { " ", "/" }
 
@@ -96,10 +99,10 @@ end
 
 -- Public
 
-local M           = {}
+local M              = {}
 
 -- Autocompletes user input
-M.autocomplete    = function(text)
+M.autocomplete       = function(text)
   local splits = vim.split(text, " ")
 
   if #cache.all_commands == 0 then
@@ -128,11 +131,44 @@ M.autocomplete    = function(text)
   return cache.commands
 end
 
-M.preload         = function()
+M.preload            = function()
   fn.preload_commands()
 end
 
-M.system_command  = function(text)
+M.preview_substitute = function(pattern, replacement, flags)
+  local prompt_bufnr = vim.api.nvim_get_current_buf()
+  local picker = action_state.get_current_picker(prompt_bufnr)
+  local bufnr = vim.api.nvim_win_get_buf(picker.original_win_id)
+
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  vim.api.nvim_buf_clear_namespace(bufnr, config.namespace_id, 0, -1)
+
+  for i, line in ipairs(lines) do
+    local new_line = vim.fn.substitute(line, pattern, replacement, flags)
+    if new_line ~= line then
+      local col_start, col_end = line:find(pattern)
+      if not col_start and not col_end then goto continue end
+
+      assert(col_start, 'Pattern start not found')
+      assert(col_end, 'Pattern end not found')
+      vim.api.nvim_buf_set_extmark(bufnr, config.namespace_id, i - 1, col_start - 1, {
+        end_row = i - 1,
+        end_col = col_end,
+        hl_group = 'DiffDelete'
+      })
+      vim.api.nvim_buf_set_extmark(bufnr, config.namespace_id, i - 1, col_end, {
+        end_col = col_end,
+        virt_text = { { replacement, 'DiffAdd' } },
+        virt_text_pos = "inline",
+      })
+    end
+    ::continue::
+  end
+
+  return {}
+end
+
+M.system_command     = function(text)
   local split = vim.split(text, ' ')
   local parts = #split
   local input_start = ''
@@ -159,7 +195,7 @@ M.system_command  = function(text)
 end
 
 -- Loads full command history
-M.command_history = function()
+M.command_history    = function()
   local history_string = assert(vim.fn.execute('history cmd'), 'History is empty')
   local history_list = vim.split(history_string, '\n')
   cache.history = {}
@@ -170,7 +206,7 @@ M.command_history = function()
   return fn.uniq(cache.history)
 end
 
-M.sort            = function(table)
+M.sort               = function(table)
   table.sort(table, compare)
 end
 
