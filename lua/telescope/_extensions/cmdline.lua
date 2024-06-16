@@ -5,21 +5,13 @@ if not has_telescope then
 end
 
 local cmdline = require('cmdline')
+local config = require('cmdline.config')
 local action = require('cmdline.actions')
 local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
 local entry_display = require("telescope.pickers.entry_display")
 
 local sorter = require('cmdline.sorter')
-
-local get_config = function()
-  local config = require('cmdline.config')
-  if config.values == nil or config.values == {} then
-    return config.defaults
-  else
-    return config.values
-  end
-end
 
 local displayer = entry_display.create({
   separator = " ",
@@ -30,7 +22,7 @@ local displayer = entry_display.create({
 })
 
 local make_display = function(entry)
-  local config = assert(get_config(), "No config found")
+  local config = assert(config.get(), "No config found")
   return displayer({
     { entry.icon, config.highlights.icon },
     { entry.cmd },
@@ -52,7 +44,7 @@ local make_finder = function(config)
 end
 
 local make_picker = function(opts)
-  local config = assert(get_config(), "No config found")
+  local config = assert(config.get(), "No config found")
   return pickers.new(config.picker, {
     prompt_title = "Cmdline",
     prompt_prefix = " : ",
@@ -87,7 +79,10 @@ local cmdline_visual = function(opts)
 end
 
 return telescope.register_extension({
-  setup   = function(ext_config, config)
+  setup   = function(ext_config, user_config)
+    if vim.fn.has('nvim-0.10') == 0 then
+      vim.notify('Cmdline extension requires Neovim 0.10 or higher', vim.log.levels.ERROR, {})
+    end
     require("cmdline.config").set_defaults(ext_config)
   end,
   exports = {

@@ -1,4 +1,5 @@
 local config = require("cmdline.config")
+local utils = require("cmdline.utils")
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 
@@ -10,21 +11,6 @@ local get_user_input = function(prompt_bufnr)
   return string.gsub(lines[1], picker.prompt_prefix, '', 1)
 end
 
--- TODO: Print long messages in split buffer??
-local print_output = function(lines)
-  vim.cmd('split')
-  local win = vim.api.nvim_get_current_win()
-  local buf = vim.api.nvim_create_buf(true, true)
-  vim.o.number = false
-  vim.o.relativenumber = false
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-  vim.bo[buf].buftype = 'nofile'
-  vim.bo[buf].bufhidden = 'hide'
-  vim.bo[buf].swapfile = false
-  vim.api.nvim_win_set_buf(win, buf)
-  vim.api.nvim_exec2('resize 10', {})
-end
-
 -- Runs user input as neovim command and keeps in history.
 local run = function(cmd)
   if tonumber(cmd) then
@@ -32,44 +18,45 @@ local run = function(cmd)
     return
   end
 
+  -- History
   vim.fn.histadd("cmd", cmd)
 
-  local cmd_ok, nvim_cmd = pcall(vim.api.nvim_parse_cmd, cmd, {})
-  if not cmd_ok then
+  -- Validate command
+  local ok, parsed = pcall(vim.api.nvim_parse_cmd, cmd, {})
+  if not ok then
     vim.notify('Invalid command: ' .. cmd, vim.log.levels.ERROR, {})
     return
   end
 
+  -- System command
   if config.values.overseer.enabled and string.sub(cmd, 1, 1) == '!' then
     vim.api.nvim_exec2('OverseerRunCmd ' .. cmd:sub(2), {})
     vim.api.nvim_exec2('OverseerOpen', {})
     return
   end
 
-  if not config.values.output_pane.enabled then
-    if vim.fn.has('nvim-0.8') == 1 then
-      vim.api.nvim_exec2(cmd, { output = false })
-    else
-      ---@diagnostic disable-next-line: deprecated, undefined-field
-      vim.api.nvim_exec(cmd, false)
-    end
+  -- Run command and get output
+  local data = vim.api.nvim_exec2(cmd, { output = true })
+  local output = data.output
+
+  -- Skip output on silent or custom commands
+  if #output == 0 or parsed.mods.silent or utils.command_exists(parsed.cmd) then
     return
   end
 
-  local data = vim.api.nvim_exec2(cmd, { output = true })
-  local output = data.output
   local lines = 0
-
   for _ in output:gmatch("([^\n]*)\n?") do
     lines = lines + 1
   end
 
-  -- TODO: Check better way to avoid long messages
-  if #output > 0 and lines <= 3 then
+  -- Notify small messages
+  if lines < config.values.output_pane.min_lines then
     vim.notify(output, vim.log.levels.INFO, {})
-  else
-    print_output(vim.split(output, '\n'))
+    return
   end
+
+  -- Show output in split buffer
+  utils.print_output(vim.split(output, '\n'), config.values.output_pane.max_height)
 end
 
 local A = {}

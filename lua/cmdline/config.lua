@@ -4,15 +4,15 @@ local defaults = {
   },
   icons       = {
     history = " ",
-    command = " ", -- 󰣿 󰴲 󰏤 
+    command = " ",
     number  = "󰴍 ",
     system  = "",
     unknown = "",
   },
   picker      = {
     layout_config = {
-      width  = 100,
-      height = 25,
+      width  = 70,
+      height = 15,
     }
   },
   completions = {
@@ -27,11 +27,14 @@ local defaults = {
     enabled = true,
   },
   output_pane = {
-    enabled = false
+    enabled = false,
+    min_lines = 5,
+    max_height = 25,
   }
 }
 
 local config = {
+  namespace_id = vim.api.nvim_create_namespace('cmdline'),
   values = {
     mappings = {}
   }
@@ -43,6 +46,13 @@ function config.set_defaults(user_defaults)
   config.values = vim.tbl_deep_extend("keep", user_defaults, defaults)
 end
 
-config.namespace_id = vim.api.nvim_create_namespace('cmdline')
+-- Retreives custom configuration or default setings
+function config.get()
+  if config.values == nil or config.values == {} then
+    return config.defaults
+  else
+    return config.values
+  end
+end
 
 return config
