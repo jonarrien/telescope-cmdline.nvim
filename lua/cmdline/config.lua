@@ -20,11 +20,11 @@ local defaults = {
   },
   mappings    = {
     complete      = '<Tab>',
-    run_selection = '<C-CR>',
-    run_input     = '<CR>',
+    run_selection = '<CR>',
+    run_input     = '<C-CR>',
   },
   overseer    = {
-    enabled = true,
+    enabled = false,
   },
   output_pane = {
     enabled = false,

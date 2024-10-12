@@ -77,23 +77,29 @@ You can customise cmdline settings in telescope configuration.
 
 ```lua
 require("telescope").setup({
-  ...
+  -- ...
   extensions = {
     cmdline = {
+      -- Adjust telescope picker size and layout
       picker = {
         layout_config = {
           width  = 120,
           height = 25,
         }
       },
+      -- Adjust your mappings 
       mappings    = {
         complete      = '<Tab>',
         run_selection = '<C-CR>',
         run_input     = '<CR>',
       },
+      -- Triggers any shell command using overseer.nvim (`:!`)
+      overseer    = {
+        enabled = true,
+      },
     },
   }
-  ...
+  -- ...
 })
 ```
 
@@ -101,15 +107,13 @@ require("telescope").setup({
 
 ## Mappings
 
-- `<CR>`  Run user input if entered, otherwise run first selection
+- `<CR>`  Runs selected command from completion, otherwise runs user input
 - `<TAB>` complete current selection into input (useful for :e, :split, :vsplit, :tabnew)
-- `<C-CR>`Run selection directly
 - `<C-e>` edit current selection in prompt
 
 Cmdline can be executed using `:Telescope cmdline<CR>`, but it doesn't
-include any mapping by default. Normally I use ':' to trigger it, but
-it's true there are some caveats or edge cases. 
-
+include any mapping by default. Normally I suggest using ':' to
+trigger it, but it's true there are some caveats or edge cases.
 Please, configure the mapping which suits best for you:
 
 ```lua

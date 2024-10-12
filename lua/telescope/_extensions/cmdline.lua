@@ -51,10 +51,14 @@ local make_picker = function(opts)
     finder = make_finder(config),
     sorter = sorter(opts),
     attach_mappings = function(_, map)
-      map("i", config.mappings.complete, action.complete_input)     -- <Tab>
-      map("i", config.mappings.run_input, action.run_input)         -- <CR>
-      map("i", config.mappings.run_selection, action.run_selection) -- <C-CR>
+      -- Autocomplete using <Tab>
+      map("i", config.mappings.complete, action.complete_input)
+      -- Run selection with <CR>
+      map("i", config.mappings.run_selection, action.run_selection)
+      -- Run command from input field with <C-CR> (special cases) ??
+      map("i", config.mappings.run_input, action.run_input)
       map("i", "<C-e>", action.edit)
+
       require("telescope.actions").close:enhance {
         post = function()
           cmdline.preview.clean(vim.api.nvim_win_get_buf(0))
