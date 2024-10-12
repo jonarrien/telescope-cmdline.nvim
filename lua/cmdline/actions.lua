@@ -29,14 +29,23 @@ local run = function(cmd)
   end
 
   -- System command
-  if config.values.overseer.enabled and string.sub(cmd, 1, 1) == '!' then
-    vim.api.nvim_exec2('OverseerRunCmd ' .. cmd:sub(2), {})
-    vim.api.nvim_exec2('OverseerOpen', {})
+  if string.sub(cmd, 1, 1) == '!' then
+    if config.values.overseer.enabled then
+      vim.api.nvim_exec2('OverseerRunCmd ' .. cmd:sub(2), {})
+      vim.api.nvim_exec2('OverseerOpen', {})
+    else
+      vim.cmd.split("term://" .. cmd:sub(2))
+    end
     return
   end
 
   -- Run command and get output
-  local data = vim.api.nvim_exec2(cmd, { output = true })
+  local executed, data = pcall(vim.api.nvim_exec2, cmd, { output = true })
+  if not executed then
+    vim.notify('Error executing command: ' .. cmd, vim.log.levels.ERROR, {})
+    return
+  end
+  -- local data = vim.api.nvim_exec2(cmd, { output = true })
   local output = data.output
 
   -- Skip output on silent or custom commands
