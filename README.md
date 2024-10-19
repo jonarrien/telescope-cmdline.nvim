@@ -121,6 +121,14 @@ vim.api.nvim_set_keymap('n', ':', ':Telescope cmdline<CR>', { noremap = true, de
 vim.api.nvim_set_keymap('n', '<leader><leader>', ':Telescope cmdline<CR>', { noremap = true, desc = "Cmdline" })
 ```
 
+## Caveats
+
+- Only the first error message of several may be displayed, because the Neovim Lua API
+  does not return multiple errors. For example, running `q` or `quit` from the standard
+  command line when there are unsaved changes returns multiple errors, the second and
+  subsequent errors tell which buffers have unsaved changes, but the first error, the
+  only one available to `telescope-cmdline.nvim`, just says "No write since last change".
+
 ## Notes
 
 - [x] Support normal mode
