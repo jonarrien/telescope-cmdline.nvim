@@ -42,7 +42,10 @@ local run = function(cmd)
   -- Run command and get output
   local executed, data = pcall(vim.api.nvim_exec2, cmd, { output = true })
   if not executed then
-    vim.notify('Error executing command: ' .. cmd, vim.log.levels.ERROR, {})
+    -- Parse the trailing fragment of Vimscript-Lua "bridged" error messages
+    -- (i.e. `Vim(COMMAND_NAME):E999: Error message`)
+    local msg = data:match('Vim%([^)]*%):(.*)$')
+    vim.notify('Error executing command: ' .. cmd .. '\n' .. msg, vim.log.levels.ERROR, {})
     return
   end
   -- local data = vim.api.nvim_exec2(cmd, { output = true })
