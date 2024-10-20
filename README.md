@@ -1,33 +1,46 @@
 # telescope-cmdline.nvim
 
+![tag](https://img.shields.io/github/v/tag/jonarrien/telescope-cmdline.nvim)
+![code size](https://img.shields.io/github/languages/code-size/jonarrien/telescope-cmdline.nvim)
+![license](https://img.shields.io/github/license/nvim-lualine/lualine.nvim)
+![github prs](https://img.shields.io/github/issues-pr/jonarrien/telescope-cmdline.nvim)
+
 Telescope extension to use command line in a floating window, rather
-than in bottom-left corner.
+than in bottom-left corner. Allows using fuzzy search to filter neovim commands and command history simultaneously.
 
 ![Alt Text](.docs/demo.gif)
 
-**Intended behaviour:**
-- Show command history by default (to go up&down in history)
-- Use input text to: 
-    - autocomplete a new command
-    - fuzzy search command history
-- Use `<CR>` to trigger the selected command.
-- Use `<Tab>` to complete current completion
-- Use `<C-e>` to pass selection to input field and edit it.
+## Features
 
-> NOTE: This is an alpha version done in relative short time. May need
-> further improvements or customizations, but it's working pretty well
-> for me and thought sharing with community.
+- [x] **Command history** by default. </br>
+   Allows picking any previous command quickly.
+- [x] **Autocompletion** </br>
+    Allows using TAB key to fix spelling mistakes or complete command
+    arguments using selected row. It determines next completion level
+    by typing Space after the command. 
+    - 💡 Use `:vsplit` or  `:tabnew` and press `<Space>` to see folders and filenames.
+    - 💡 Type `DiffviewOpen` and press `<Space>` to show git branch names.
+- [x] **Fuzzy search** (Thanks to [Kacper Dębowski](https://github.com/sc0))</br>
+   Allows filtering commands and command history simultaneously using user's input.
+    - 💡 Type `lsprest` and use `<Tab>` to expand `LspRestart`
+    - 💡 Typing `dvo` can filter `DiffviewOpen` command.
+    - 💡 Typing `gipure` can filter a previously executed `Git pull --rebase` command.
+- [x] [overseer.nvim](https://github.com/stevearc/overseer.nvim) integration for shell commands (`:!...`)
+- [ ] Support visual mode (PENDING)
 
 ## Installation
 
-⚠️ Make sure to load the `cmdline` extension after telescope, otherwise
-`Telescope cmdline` command won't be available.
+> [!WARNING]  
+> Make sure to load the `cmdline` extension after telescope, otherwise
+> `Telescope cmdline` command won't be available.
+
 
 <details>
-<summary>Packer</summary>
+<summary>Using Packer</summary>
 
 ```lua
 use { 'jonarrien/telescope-cmdline.nvim' }
+```
 
 ```lua
 require("telescope").setup({})
@@ -36,8 +49,9 @@ require("telescope").load_extension('cmdline')
 
 </details>
 
+
 <details>
-<summary>Lazy</summary>
+<summary>Using Lazy</summary>
 
 Install package as telescope dependency
 
@@ -50,7 +64,8 @@ Install package as telescope dependency
     'jonarrien/telescope-cmdline.nvim',
   },
   keys = {
-    { ':', '<cmd>Telescope cmdline<cr>', desc = 'Cmdline' }
+    { 'Q', '<cmd>Telescope cmdline<cr>', desc = 'Cmdline' }
+    { '<leader><leader>', '<cmd>Telescope cmdline<cr>', desc = 'Cmdline' }
   },
   opts = {
     ...
@@ -103,23 +118,33 @@ require("telescope").setup({
 })
 ```
 
-> Default configuration can be found in `lua/cmdline/config.lua` file.
+> Default configuration can be found in [lua/cmdline/config.lua](https://github.com/jonarrien/telescope-cmdline.nvim/blob/main/lua/cmdline/config.lua) file.
 
 ## Mappings
 
-- `<CR>`  Runs selected command from completion, otherwise runs user input
-- `<TAB>` complete current selection into input (useful for :e, :split, :vsplit, :tabnew)
-- `<C-e>` edit current selection in prompt
+> [!CAUTION]
+> Neovim's built-in cmdline is triggered with `:` and overriding this
+> mapping can have a severe impact in your setup. Therefore it is completely
+> discouraged.
 
-Cmdline can be executed using `:Telescope cmdline<CR>`, but it doesn't
-include any mapping by default. Normally I suggest using ':' to
-trigger it, but it's true there are some caveats or edge cases.
-Please, configure the mapping which suits best for you:
+> [!TIP]  
+> The recommended mapping is `Q`, normally used for `:Ex` mode. It's
+> out of use in modern setups and is easily reachable as `:`.
+> Alternatively, you could use double leader. Please, use the one that
+> suits best for you:
 
 ```lua
-vim.api.nvim_set_keymap('n', ':', ':Telescope cmdline<CR>', { noremap = true, desc = "Cmdline" })
+vim.api.nvim_set_keymap('n', 'Q', ':Telescope cmdline<CR>', { noremap = true, desc = "Cmdline" })
 vim.api.nvim_set_keymap('n', '<leader><leader>', ':Telescope cmdline<CR>', { noremap = true, desc = "Cmdline" })
 ```
+
+**Picker mappings**
+
+| Key             | Descrition                                                  |
+|---------------- | ----------------------------------------------------------- |
+| `<CR>`          | Triggers the selected command in telescope results          |
+| `<C-CR>`        | Triggers user input from prompt, ignoring selected result.  |
+| `<TAB>`         | Expand selected row into prompt for editing                 |
 
 ## Caveats
 
@@ -131,9 +156,20 @@ vim.api.nvim_set_keymap('n', '<leader><leader>', ':Telescope cmdline<CR>', { nor
 
 ## Notes
 
-- [x] Support normal mode
-- [ ] Support visual mode
-- [x] Support fuzzy finding (Thanks to @sc0)
+> [!CAUTION]
+> This is an alpha version done in relative short time. May need
+> further improvements or customizations, but it's working pretty well
+> for me and thought sharing with community.
+
+## Contributing
+
+Feel free to create an issue/PR if you want to see anything else implemented, but please read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a PR.
+
+We enjoy this awesome plugin thanks to these wonderful people:
+
+<a href="https://github.com/jonarrien/telescope-cmdline.nvim/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=jonarrien/telescope-cmdline.nvim" />
+</a>
 
 ## Acknowledgements
 
