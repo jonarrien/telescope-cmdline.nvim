@@ -59,7 +59,7 @@ local make_picker = function(opts)
       -- Run command from input field with <C-CR> (special cases) ??
       map("i", c.mappings.run_input, action.run_input)
       map("i", "<C-e>", action.edit)
-      -- Close the prompt with <C-e>
+      -- Close the prompt with <C-c>
       map("i", c.mappings.close, action.close)
 
       require("telescope.actions").close:enhance {
