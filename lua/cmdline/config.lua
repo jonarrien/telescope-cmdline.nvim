@@ -22,6 +22,7 @@ local defaults = {
     complete      = '<Tab>',
     run_selection = '<CR>',
     run_input     = '<C-CR>',
+    close         = '<C-c',
   },
   overseer    = {
     enabled = false,
