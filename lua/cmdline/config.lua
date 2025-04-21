@@ -23,6 +23,7 @@ local defaults = {
     run_selection = '<CR>',
     run_input     = '<C-CR>',
     close         = '<C-c',
+    edit          = '<C-e>',
   },
   overseer    = {
     enabled = false,

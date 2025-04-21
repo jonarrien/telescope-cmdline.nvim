@@ -61,6 +61,7 @@ local make_picker = function(opts)
       map("i", "<C-e>", action.edit)
       -- Close the prompt with <C-c>
       map("i", c.mappings.close, action.close)
+      map("i", c.mappings.edit, action.edit)
 
       require("telescope.actions").close:enhance {
         post = function()
