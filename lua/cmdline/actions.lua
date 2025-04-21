@@ -110,4 +110,8 @@ A.run_selection = function(prompt_bufnr)
   run(command.cmd)
 end
 
+A.close = function(prompt_bufnr) 
+    actions.close(prompt_bufnr)
+end
+
 return A
