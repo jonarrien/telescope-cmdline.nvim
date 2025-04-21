@@ -58,7 +58,7 @@ local make_picker = function(opts)
       map("i", c.mappings.run_selection, action.run_selection)
       -- Run command from input field with <C-CR> (special cases) ??
       map("i", c.mappings.run_input, action.run_input)
-      map("i", "<C-e>", action.edit)
+      map("i", c.mappings.edit, action.edit)
 
       require("telescope.actions").close:enhance {
         post = function()
