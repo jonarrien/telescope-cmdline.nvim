@@ -49,6 +49,7 @@ local make_picker = function(opts)
   return pickers.new(c.picker, {
     prompt_title = "Cmdline",
     prompt_prefix = " : ",
+    default_text = opts.default_text or '',
     finder = make_finder(c),
     sorter = sorter(opts),
     attach_mappings = function(_, map)
@@ -62,6 +63,9 @@ local make_picker = function(opts)
       -- Close the prompt with <C-c>
       map("i", c.mappings.close, action.close)
       map("i", c.mappings.edit, action.edit)
+
+      -- Allow callbacks after loading (i.e: move cursor)
+      if opts.on_load then vim.schedule(opts.on_load) end
 
       require("telescope.actions").close:enhance {
         post = function()
