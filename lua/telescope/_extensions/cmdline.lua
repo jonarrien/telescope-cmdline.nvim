@@ -52,8 +52,7 @@ local make_picker = function(opts)
     default_text = opts.default_text or '',
     finder = make_finder(c),
     sorter = sorter(opts),
-    attach_mappings = function(_, map)
-      -- Autocomplete using <Tab>
+    attach_mappings = function(prompt_bufnr, map)
       map("i", c.mappings.complete, action.complete_input)
       -- Run selection with <CR>
       map("i", c.mappings.run_selection, action.run_selection)
@@ -72,6 +71,12 @@ local make_picker = function(opts)
           cmdline.preview.clean(vim.api.nvim_win_get_buf(0))
         end,
       }
+
+      -- If custom attach_mappings is provided, call it
+      if opts.attach_mappings and type(opts.attach_mappings) == "function" then
+        opts.attach_mappings(prompt_bufnr, map)
+      end
+
       return true
     end,
   })
