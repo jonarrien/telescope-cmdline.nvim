@@ -1,5 +1,4 @@
 local config = require("cmdline.config")
-local utils = require("cmdline.utils")
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 
@@ -9,6 +8,11 @@ local get_user_input = function(prompt_bufnr)
   local lines = vim.api.nvim_buf_get_lines(prompt_bufnr, 0, -1, false)
   if #lines == 0 then return "" end
   return string.gsub(lines[1], picker.prompt_prefix, '', 1)
+end
+
+-- Shows the output and keeps in message history when `keep_history` is true
+local function show_msg(chunks, keep_history, opts)
+  vim.api.nvim_echo({ { chunks, "None" } }, keep_history, opts)
 end
 
 -- Runs user input as neovim command and keeps in history.
@@ -21,21 +25,21 @@ local run = function(cmd)
   -- History
   vim.fn.histadd("cmd", cmd)
 
+  -- System command
+  if string.sub(cmd, 1, 1) == '!' then
+    if config.values.overseer.enabled then
+      vim.cmd.OverseerRunCmd(cmd:sub(2))
+      vim.cmd.OverseerOpen()
+    else
+      vim.cmd.split("term://" .. cmd:sub(2))
+    end
+    return
+  end
+
   -- Validate command
   local ok, parsed = pcall(vim.api.nvim_parse_cmd, cmd, {})
   if not ok then
     vim.notify('Invalid command: ' .. cmd, vim.log.levels.ERROR, {})
-    return
-  end
-
-  -- System command
-  if string.sub(cmd, 1, 1) == '!' then
-    if config.values.overseer.enabled then
-      vim.api.nvim_exec2('OverseerRunCmd ' .. cmd:sub(2), {})
-      vim.api.nvim_exec2('OverseerOpen', {})
-    else
-      vim.cmd.split("term://" .. cmd:sub(2))
-    end
     return
   end
 
@@ -48,27 +52,18 @@ local run = function(cmd)
     vim.notify('Error executing command: ' .. cmd .. '\n' .. msg, vim.log.levels.ERROR, {})
     return
   end
-  -- local data = vim.api.nvim_exec2(cmd, { output = true })
-  local output = data.output
 
-  -- Skip output on silent or custom commands
-  if #output == 0 or parsed.mods.silent or utils.command_exists(parsed.cmd) then
-    return
-  end
+  -- Skip output for silent commands
+  if parsed.mods.silent then return end
 
-  local lines = 0
-  for _ in output:gmatch("([^\n]*)\n?") do
-    lines = lines + 1
-  end
+  -- NOTE: Experimental feature to skip `:messages`, `:tabs` or `:buffers`
+  local keep_history = true
+  local skip_addr = { "?", "none" }
+  if vim.tbl_contains(skip_addr, parsed.addr) then keep_history = false end
 
-  -- Notify small messages
-  if lines < config.values.output_pane.min_lines then
-    vim.notify(output, vim.log.levels.INFO, {})
-    return
-  end
-
-  -- Show output in split buffer
-  utils.print_output(vim.split(output, '\n'), config.values.output_pane.max_height)
+  vim.defer_fn(function()
+    show_msg(data.output, keep_history, {})
+  end, 100)
 end
 
 local A = {}
@@ -110,8 +105,8 @@ A.run_selection = function(prompt_bufnr)
   run(command.cmd)
 end
 
-A.close = function(prompt_bufnr) 
-    actions.close(prompt_bufnr)
+A.close = function(prompt_bufnr)
+  actions.close(prompt_bufnr)
 end
 
 return A

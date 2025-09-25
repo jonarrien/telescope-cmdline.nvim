@@ -97,16 +97,10 @@ end
 
 -- Telescope extension setup
 -- NOTE: It's loads the extension twice (https://github.com/nvim-telescope/telescope.nvim/issues/2659)
-local setup = function(ext_config, user_config)
-  if vim.fn.has('nvim-0.10') == 0 then
-    vim.notify('Cmdline requires Neovim 0.10.0 or higher', vim.log.levels.ERROR, {})
-  end
-
-  require("cmdline.config").set_defaults(ext_config)
-end
-
 return telescope.register_extension({
-  setup   = setup,
+  setup   = function(ext_config, user_config)
+    cmdline.setup(ext_config)
+  end,
   exports = {
     cmdline = telescope_cmdline,
     visual  = cmdline_visual,

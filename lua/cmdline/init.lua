@@ -26,6 +26,15 @@ local utils = require("cmdline.utils")
 
 local C = {}
 
+---@param opts? CmdlineConfig
+C.setup = function(opts)
+  if vim.fn.has('nvim-0.10') == 0 then
+    vim.notify('Cmdline requires Neovim 0.10.0 or higher', vim.log.levels.ERROR, {})
+  end
+
+  require("cmdline.config").set_defaults(opts)
+end
+
 -- Autoomplete user input
 --
 -- 1. Numbers  => Go to line

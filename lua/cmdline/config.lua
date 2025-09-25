@@ -1,3 +1,4 @@
+---@class CmdlineConfig
 local defaults = {
   highlights  = {
     icon = "Include",
@@ -28,11 +29,6 @@ local defaults = {
   overseer    = {
     enabled = false,
   },
-  output_pane = {
-    enabled = false,
-    min_lines = 5,
-    max_height = 25,
-  }
 }
 
 local config = {
